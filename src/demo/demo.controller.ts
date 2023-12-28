@@ -10,13 +10,19 @@ import {
 import { DemoService } from './demo.service';
 import { CreateDemoDto } from './dto/create-demo.dto';
 import { UpdateDemoDto } from './dto/update-demo.dto';
-import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiParam,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
 @Controller({
   path: 'demo',
   version: '1', // 版本号
 })
 @ApiTags('测试模块')
+@ApiBearerAuth()
 export class DemoController {
   constructor(private readonly demoService: DemoService) {}
 

@@ -56,6 +56,8 @@ export class UserService {
     if (foundUser.password !== md5(user.password)) {
       throw new HttpException('密码错误', 200);
     }
+
+    delete foundUser.password; // 删除密码字段
     return foundUser;
   }
 

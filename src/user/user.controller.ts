@@ -10,12 +10,18 @@ import {
   Res,
   Inject,
   ValidationPipe,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiParam,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import * as svgCaptcha from 'svg-captcha';
 import { Response } from 'express';
 
@@ -42,8 +48,15 @@ export class UserController {
   @ApiOperation({ summary: '用户登录' })
   async login(
     @Body(ValidationPipe) user: LoginDto,
+    @Req() req,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<string> {
+  ): Promise<any> {
+    if (
+      user?.code?.toLocaleLowerCase() !== req.session.code.toLocaleLowerCase()
+    ) {
+      throw new BadRequestException('验证码错误');
+    }
+
     const foundUser = await this.userService.login(user);
 
     if (foundUser) {
@@ -56,14 +69,19 @@ export class UserController {
       });
       // 把 user 信息放到 jwt 通过 header 里返回
       res.setHeader('token', token);
-      return 'login success';
+      return {
+        userInfo: foundUser,
+        token,
+        message: '登录成功',
+      };
     } else {
-      return 'login fail';
+      return '登录失败';
     }
   }
 
   @Post('/logout')
   @ApiOperation({ summary: '退出登录' })
+  @ApiBearerAuth()
   logout(@Body() createUserDto: any) {
     console.log(createUserDto);
     // return this.userService.create(createUserDto);
@@ -81,6 +99,7 @@ export class UserController {
       ignoreChars: '0o1i', // 验证码字符中排除 0o1i
       noise: 4, // 干扰线条的数量
     });
+
     req.session.code = captcha.text; //存储验证码记录到session
     res.type('image/svg+xml');
     res.send(captcha.data);

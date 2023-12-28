@@ -19,7 +19,7 @@ import { User } from './user/entities/user.entity';
     JwtModule.register({
       global: true,
       secret: 'xxch',
-      signOptions: { expiresIn: '7d' },
+      signOptions: { expiresIn: '24h' },
     }),
     DemoModule,
     UserModule,
