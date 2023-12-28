@@ -5,10 +5,20 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { HttpReqTransformInterceptor } from './interceptors/http-req.interceptor';
 import { AllExceptionFilter } from './filters/all-exception.filter';
 import * as session from 'express-session';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: ['error', 'warn'],
+  });
+
+  /* 
+    配置静态资源服务器
+    访问资源路径示例：http://localhost:3000/uploadFiles/1703775003336.jpeg
+  */
+  app.useStaticAssets(join(__dirname, 'uploadFiles'), {
+    prefix: '/uploadFiles',
   });
 
   // 开启版本控制

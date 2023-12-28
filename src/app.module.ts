@@ -6,6 +6,7 @@ import { DemoModule } from './demo/demo.module';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { User } from './user/entities/user.entity';
     }),
     DemoModule,
     UserModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
