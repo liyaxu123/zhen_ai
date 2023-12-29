@@ -99,6 +99,7 @@ export class UserController {
       ignoreChars: '0o1i', // 验证码字符中排除 0o1i
       noise: 4, // 干扰线条的数量
     });
+    console.log(captcha.text);
 
     req.session.code = captcha.text; //存储验证码记录到session
     res.type('image/svg+xml');
