@@ -13,6 +13,9 @@ async function bootstrap() {
     logger: ['error', 'warn'],
   });
 
+  // 配置全局路由前缀
+  app.setGlobalPrefix('api');
+
   /* 
     配置静态资源服务器
     访问资源路径示例：http://localhost:3000/uploadFiles/1703775003336.jpeg

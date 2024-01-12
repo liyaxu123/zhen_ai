@@ -16,7 +16,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { LoginGuard } from '../login.guard';
+import { LoginGuard } from '../guards/login.guard';
 
 @Controller('upload')
 @ApiTags('文件上传模块')
