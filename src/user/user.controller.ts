@@ -22,6 +22,7 @@ import {
   ApiOperation,
   ApiParam,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 import * as svgCaptcha from 'svg-captcha';
 import { Response } from 'express';
@@ -53,7 +54,8 @@ export class UserController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     if (
-      user?.code?.toLocaleLowerCase() !== req.session.code.toLocaleLowerCase()
+      user?.verifyCode?.toLocaleLowerCase() !==
+      req.session.verifyCode.toLocaleLowerCase()
     ) {
       throw new BadRequestException('验证码错误');
     }
@@ -94,21 +96,26 @@ export class UserController {
     // return this.userService.create(createUserDto);
   }
 
-  @Get('code')
+  @Get('verifyCode')
   @ApiOperation({ summary: '获取验证码图片', description: '获取验证码图片' })
+  @ApiQuery({
+    name: 'bgColor',
+    description: '验证码图片的背景颜色',
+    example: '#cc9966',
+  })
   createCode(@Req() req, @Res() res) {
     const captcha = svgCaptcha.create({
       size: 4, //生成几个验证码
       fontSize: 50, //文字大小
       width: 100, //宽度
       height: 34, //高度
-      background: '#cc9966', //背景颜色
+      background: req.query.bgColor || '#cc9966', //背景颜色
       ignoreChars: '0o1i', // 验证码字符中排除 0o1i
       noise: 4, // 干扰线条的数量
     });
     console.log(captcha.text);
 
-    req.session.code = captcha.text; //存储验证码记录到session
+    req.session.verifyCode = captcha.text; //存储验证码记录到session
     res.type('image/svg+xml');
     res.send(captcha.data);
   }

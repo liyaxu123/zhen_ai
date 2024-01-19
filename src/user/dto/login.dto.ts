@@ -12,5 +12,5 @@ export class LoginDto {
 
   @IsNotEmpty()
   @ApiProperty({ description: '验证码', example: '1234', required: true })
-  code: string;
+  verifyCode: string;
 }
