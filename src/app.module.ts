@@ -6,7 +6,11 @@ import { DemoModule } from './demo/demo.module';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
+import { Role } from './role/entities/role.entity';
+import { Permission } from './permission/entities/permission.entity';
 import { UploadModule } from './upload/upload.module';
+import { RoleModule } from './role/role.module';
+import { PermissionModule } from './permission/permission.module';
 
 @Module({
   imports: [
@@ -14,7 +18,7 @@ import { UploadModule } from './upload/upload.module';
       type: 'mongodb', // 指定数据库类型
       host: 'localhost', // 数据库地址
       database: 'demo', // 数据库名称
-      entities: [User],
+      entities: [User, Role, Permission],
       synchronize: true,
     }),
     JwtModule.register({
@@ -25,6 +29,8 @@ import { UploadModule } from './upload/upload.module';
     DemoModule,
     UserModule,
     UploadModule,
+    RoleModule,
+    PermissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

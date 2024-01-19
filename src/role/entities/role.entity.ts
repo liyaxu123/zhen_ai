@@ -1,40 +1,29 @@
 import {
-  Column,
   Entity,
-  ObjectId,
   ObjectIdColumn,
+  Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ObjectId,
 } from 'typeorm';
-import { Role } from '../../role/entities/role.entity';
+import { Permission } from '../../permission/entities/permission.entity';
 
 @Entity()
-export class User {
+export class Role {
   @ObjectIdColumn()
   id: ObjectId;
 
   @Column({
     length: 50,
-    comment: '用户名',
+    comment: '角色名称',
   })
-  username: string;
+  name: string;
 
   @Column({
     length: 50,
-    comment: '密码',
+    comment: '角色描述',
   })
-  password: string;
-
-  @Column({
-    comment: '头像',
-  })
-  avatar: string;
-
-  @Column({
-    comment: '手机号',
-    length: 11,
-  })
-  tel: string;
+  desc: string;
 
   @CreateDateColumn({
     comment: '创建时间',
@@ -46,6 +35,6 @@ export class User {
   })
   updateTime: Date;
 
-  @Column(() => Role)
-  roles: Role[];
+  @Column(() => Permission)
+  permissions: Permission[];
 }

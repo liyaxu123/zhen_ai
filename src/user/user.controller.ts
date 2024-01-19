@@ -16,6 +16,7 @@ import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { AssignRolesDto } from './dto/assign-roles.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -79,6 +80,12 @@ export class UserController {
     }
   }
 
+  @Post('/assign_roles')
+  @ApiOperation({ summary: '为用户分配角色' })
+  assignRoles(@Body() assignRolesDto: AssignRolesDto): Promise<any> {
+    return this.userService.assignRoles(assignRolesDto);
+  }
+
   @Post('/logout')
   @ApiOperation({ summary: '退出登录' })
   @ApiBearerAuth()
@@ -115,7 +122,7 @@ export class UserController {
     type: 'string',
   })
   findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+    return this.userService.findOne(id);
   }
 
   @Patch(':id')
