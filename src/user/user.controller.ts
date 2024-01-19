@@ -53,6 +53,9 @@ export class UserController {
     @Req() req,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
+    // 在处理请求时，确保在响应头中包含Access-Control-Allow-Credentials: true，这是告诉浏览器允许携带凭证的关键。
+    res.header('Access-Control-Allow-Credentials', 'true');
+
     if (
       user?.verifyCode?.toLocaleLowerCase() !==
       req.session.verifyCode.toLocaleLowerCase()

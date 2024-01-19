@@ -13,6 +13,14 @@ async function bootstrap() {
     logger: ['error', 'warn'],
   });
 
+  // 启用CORS，解决跨域问题
+  app.enableCors({
+    origin: 'http://localhost:8000', // 指定允许的来源
+    methods: ['GET', 'POST', 'PUT', 'Delete', 'Patch'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // 允许浏览器在跨域请求中包含凭证信息(cookies)，配置此项时，必须指定允许的来源，而不是使用通配符，否则不生效
+  });
+
   // 配置全局路由前缀
   app.setGlobalPrefix('api');
 
