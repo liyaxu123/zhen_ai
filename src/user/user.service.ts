@@ -1,4 +1,9 @@
-import { Injectable, HttpException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AssignRolesDto } from './dto/assign-roles.dto';
@@ -32,7 +37,7 @@ export class UserService {
     });
 
     if (foundUser) {
-      throw new HttpException('用户已存在', 200);
+      throw new BadRequestException('注册失败，用户已存在');
     }
 
     const newUser = new User();
@@ -55,10 +60,12 @@ export class UserService {
     });
 
     if (!foundUser) {
-      throw new HttpException('用户名不存在', 200);
+      throw new BadRequestException('登录失败，用户名不存在');
     }
-    if (foundUser.password !== md5(user.password)) {
-      throw new HttpException('密码错误', 200);
+
+    // 前端需要对密码进行md5加密处理
+    if (md5(foundUser.password) !== md5(user.password)) {
+      throw new BadRequestException('登录失败，密码错误');
     }
 
     delete foundUser.password; // 删除密码字段

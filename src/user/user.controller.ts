@@ -42,7 +42,6 @@ export class UserController {
   @Post('/register')
   @ApiOperation({ summary: '用户注册' })
   async register(@Body(ValidationPipe) user: RegisterDto) {
-    console.log('register', user);
     return await this.userService.register(user);
   }
 
@@ -76,8 +75,7 @@ export class UserController {
       // 把 user 信息放到 jwt 通过 header 里返回
       res.setHeader('token', token);
       return {
-        userInfo: foundUser,
-        token,
+        userInfo: { ...foundUser, token },
         message: '登录成功',
       };
     } else {
