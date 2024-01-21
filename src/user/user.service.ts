@@ -13,6 +13,7 @@ import { User } from './entities/user.entity';
 import * as crypto from 'crypto';
 import { ObjectId } from 'mongodb';
 import { RoleService } from '../role/role.service';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 function md5(str) {
   const hash = crypto.createHash('md5');
@@ -114,8 +115,25 @@ export class UserService {
     return user;
   }
 
-  update(id: number, updateUserDto: any) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserData: UpdateUserDto) {
+    const user = await this.userRepository.findOneBy({
+      _id: new ObjectId(id),
+    });
+
+    if (!user) {
+      throw new BadRequestException('用户不存在');
+    }
+
+    const { nickname, email, tel, avatar, intro } = updateUserData;
+    user.nickname = nickname;
+    user.email = email;
+    user.tel = tel;
+    user.avatar = avatar;
+    user.intro = intro;
+    await this.userRepository.update(id, user);
+
+    delete user.password;
+    return user;
   }
 
   remove(id: number) {

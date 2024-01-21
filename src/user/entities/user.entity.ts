@@ -31,10 +31,26 @@ export class User {
   avatar: string;
 
   @Column({
+    comment: '昵称',
+  })
+  nickname: string;
+
+  @Column({
     comment: '手机号',
     length: 11,
   })
   tel: string;
+
+  @Column({
+    comment: '邮箱地址',
+  })
+  email: string;
+
+  @Column({
+    comment: '个人简介',
+    length: 200,
+  })
+  intro: string;
 
   @CreateDateColumn({
     comment: '创建时间',

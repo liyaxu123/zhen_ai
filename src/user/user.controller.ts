@@ -11,6 +11,7 @@ import {
   Inject,
   ValidationPipe,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -26,6 +27,8 @@ import {
 } from '@nestjs/swagger';
 import * as svgCaptcha from 'svg-captcha';
 import { Response } from 'express';
+import { LoginGuard } from '../guards/login.guard';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller({
   path: 'user',
@@ -75,7 +78,8 @@ export class UserController {
       // 把 user 信息放到 jwt 通过 header 里返回
       res.setHeader('token', token);
       return {
-        userInfo: { ...foundUser, token },
+        userInfo: foundUser,
+        token,
         message: '登录成功',
       };
     } else {
@@ -85,6 +89,8 @@ export class UserController {
 
   @Post('/assign_roles')
   @ApiOperation({ summary: '为用户分配角色' })
+  @UseGuards(LoginGuard) // 登录守卫
+  @ApiBearerAuth()
   assignRoles(@Body() assignRolesDto: AssignRolesDto): Promise<any> {
     return this.userService.assignRoles(assignRolesDto);
   }
@@ -135,8 +141,10 @@ export class UserController {
 
   @Patch(':id')
   @ApiOperation({ summary: '更新用户信息', description: '根据id更新用户信息' })
-  update(@Param('id') id: string, @Body() updateUserDto: any) {
-    return this.userService.update(+id, updateUserDto);
+  @ApiBearerAuth()
+  @UseGuards(LoginGuard) // 登录守卫
+  update(@Param('id') id: string, @Body() updateUserData: UpdateUserDto) {
+    return this.userService.update(id, updateUserData);
   }
 
   @Delete(':id')
