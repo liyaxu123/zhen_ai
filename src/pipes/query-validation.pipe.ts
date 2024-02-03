@@ -10,7 +10,7 @@ import { plainToClass } from 'class-transformer';
 @Injectable()
 export class QueryValidationPipe implements PipeTransform<any> {
   async transform(value: any, metadata: ArgumentMetadata) {
-    console.log('QueryValidationPipe：', value, metadata);
+    // console.log('QueryValidationPipe：', value, metadata);
 
     const object = plainToClass(metadata.metatype, value);
     const errors = await validate(object);

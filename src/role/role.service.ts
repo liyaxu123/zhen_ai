@@ -1,6 +1,7 @@
 import { Injectable, HttpException } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { QueryRoleDto } from './dto/query-role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { ObjectId } from 'mongodb';
@@ -48,12 +49,36 @@ export class RoleService {
     });
   }
 
-  findAll() {
-    return `This action returns all role`;
-  }
+  async findAll(
+    queryInfo: QueryRoleDto,
+  ): Promise<{ data: Role[]; total: number }> {
+    const { pageNum, pageSize, id, createTime, name } = queryInfo;
+    const skip = (pageNum - 1) * pageSize;
+    const query: any = {};
 
-  findOne(id: number) {
-    return `This action returns a #${id} role`;
+    if (id) {
+      query._id = new ObjectId(id);
+    }
+
+    if (createTime && createTime.startTime && createTime.endTime) {
+      query.createTime = {
+        $gte: createTime.startTime,
+        $lte: createTime.endTime,
+      };
+    }
+
+    if (name) {
+      query.name = name;
+    }
+
+    const [data, total] = await this.roleRepository.findAndCount({
+      where: query,
+      skip,
+      take: pageSize,
+      order: { createTime: 'DESC' }, // ASC：升序， DESC：降序
+    });
+
+    return { data, total };
   }
 
   update(id: number, updateRoleDto: UpdateRoleDto) {

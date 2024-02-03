@@ -6,12 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { QueryRoleDto } from './dto/query-role.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiOperation } from '@nestjs/swagger';
+import { QueryValidationPipe } from '../pipes/query-validation.pipe';
 
 @ApiTags('角色管理模块')
 @Controller('role')
@@ -25,13 +28,9 @@ export class RoleController {
   }
 
   @Get()
-  findAll() {
-    return this.roleService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.roleService.findOne(+id);
+  @ApiOperation({ summary: '角色列表分页查询' })
+  findAll(@Query(QueryValidationPipe) queryInfo: QueryRoleDto) {
+    return this.roleService.findAll(queryInfo);
   }
 
   @Patch(':id')

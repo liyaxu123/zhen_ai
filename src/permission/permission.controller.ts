@@ -14,7 +14,7 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { QueryPermissionDto } from './dto/query-permission.dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { QueryValidationPipe } from './pipe/query-validation.pipe';
+import { QueryValidationPipe } from '../pipes/query-validation.pipe';
 import { LoginGuard } from '../guards/login.guard';
 
 @ApiTags('权限字段管理模块')
