@@ -1,4 +1,4 @@
-import { Injectable, HttpException, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +6,8 @@ import { MongoRepository } from 'typeorm';
 import { Permission } from './entities/permission.entity';
 import { ObjectId } from 'mongodb';
 import { QueryPermissionDto } from './dto/query-permission.dto';
+import { QueryTreeDto } from './dto/query-tree-dto';
+import { buildTreePlus } from '../utils/tool';
 
 @Injectable()
 export class PermissionService {
@@ -15,20 +17,84 @@ export class PermissionService {
   ) {}
 
   async create(createPermissionDto: CreatePermissionDto) {
-    // 查询权限code是否已存在
-    const foundPermission = await this.permissionRepository.findOneBy({
-      code: createPermissionDto.code,
-    });
+    const { pid, name, icon, perms, component, menuType, sort, isShow } =
+      createPermissionDto;
 
-    if (foundPermission) {
-      throw new HttpException('权限code已存在', 200);
+    // 如果菜单类型为按钮时，权限标识不能重复
+    if (menuType === 'F') {
+      const foundPerms = await this.permissionRepository.findOneBy({
+        perms: createPermissionDto.perms,
+      });
+
+      if (foundPerms) {
+        throw new BadRequestException('权限标识已存在');
+      }
+    } else {
+      // 查询 name 是否已存在
+      const foundName = await this.permissionRepository.findOneBy({
+        name: createPermissionDto.name,
+      });
+
+      if (foundName) {
+        throw new BadRequestException('权限标识已存在');
+      }
     }
 
     const permission = new Permission();
-    permission.code = createPermissionDto.code;
-    permission.desc = createPermissionDto.desc;
+    permission.pid = pid;
+    permission.name = name;
+    permission.icon = icon;
+    permission.perms = perms;
+    permission.component = component;
+    permission.menuType = menuType;
+    permission.sort = sort;
+    permission.isShow = isShow;
 
     return this.permissionRepository.save(permission);
+  }
+
+  // 获取菜单权限树
+  async getTree(queryInfo: QueryTreeDto): Promise<any[]> {
+    const { name, isShow, menuType, createTime } = queryInfo;
+
+    const query: any = {};
+
+    if (name) {
+      // 根据名字模糊查询
+      query.name = {
+        $regex: new RegExp(name, 'i'), //使用了 MongoDB 的 $regex 查询操作符，该操作符使用正则表达式进行匹配
+      };
+    }
+
+    if (isShow !== undefined) {
+      query.isShow = isShow;
+    }
+
+    if (menuType) {
+      query.menuType = menuType;
+    }
+
+    if (createTime && createTime.startTime && createTime.endTime) {
+      query.createTime = {
+        $gte: new Date(createTime.startTime),
+        $lte: new Date(createTime.endTime),
+      };
+    }
+
+    // 获取所有的权限数据
+    const permissionList = await this.permissionRepository.find({
+      where: query,
+    });
+
+    // 转为树形结构
+    const treeList = buildTreePlus(
+      permissionList.map((item: Permission) => ({
+        ...item,
+        id: item.id.toString(),
+      })),
+    );
+
+    return treeList;
   }
 
   // 根据 permissionIds 查询对应的 Permissions
@@ -93,9 +159,16 @@ export class PermissionService {
       throw new BadRequestException('编辑权限失败，该权限字段不存在');
     }
 
-    const { code, desc } = updatePermissionDto;
-    permission.code = code;
-    permission.desc = desc;
+    const { pid, name, icon, perms, component, menuType, sort, isShow } =
+      updatePermissionDto;
+    permission.pid = pid;
+    permission.name = name;
+    permission.icon = icon;
+    permission.perms = perms;
+    permission.component = component;
+    permission.menuType = menuType;
+    permission.sort = sort;
+    permission.isShow = isShow;
 
     await this.permissionRepository.update(id, permission);
 
@@ -103,6 +176,15 @@ export class PermissionService {
   }
 
   async remove(id: string) {
+    // 判断是否有子级菜单
+    const permissions = await this.permissionRepository.find({
+      where: { pid: id },
+    });
+
+    if (permissions.length > 0) {
+      throw new BadRequestException('删除失败，该权限菜单下面存在子级菜单');
+    }
+
     const res = await this.permissionRepository.deleteOne({
       _id: new ObjectId(id),
     });

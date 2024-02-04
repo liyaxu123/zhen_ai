@@ -8,11 +8,13 @@ import {
   Delete,
   Query,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { QueryPermissionDto } from './dto/query-permission.dto';
+import { QueryTreeDto } from './dto/query-tree-dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { QueryValidationPipe } from '../pipes/query-validation.pipe';
 import { LoginGuard } from '../guards/login.guard';
@@ -33,6 +35,12 @@ export class PermissionController {
   @ApiOperation({ summary: '权限字典分页查询' })
   findAll(@Query(QueryValidationPipe) queryInfo: QueryPermissionDto) {
     return this.permissionService.findAll(queryInfo);
+  }
+
+  @Post('/tree')
+  @ApiOperation({ summary: '获取菜单权限树' })
+  getTree(@Body(ValidationPipe) queryInfo: QueryTreeDto) {
+    return this.permissionService.getTree(queryInfo);
   }
 
   @Patch(':id')

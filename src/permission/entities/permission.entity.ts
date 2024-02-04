@@ -52,9 +52,6 @@ export class Permission {
   })
   isShow: boolean;
 
-  @Column({ length: 100, comment: '备注' })
-  memo: string;
-
   @CreateDateColumn({
     comment: '创建时间',
   })

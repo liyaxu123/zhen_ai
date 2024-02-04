@@ -3,7 +3,6 @@ import {
   IsString,
   IsInt,
   IsBoolean,
-  Length,
   IsEnum,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -85,14 +84,4 @@ export class CreatePermissionDto {
     type: 'boolean',
   })
   isShow: boolean;
-
-  @IsString()
-  @Length(0, 100)
-  @ApiProperty({
-    description: '备注',
-    example: '',
-    required: false,
-    type: 'string',
-  })
-  memo: string;
 }
