@@ -25,6 +25,11 @@ export class Role {
   })
   desc: string;
 
+  @Column({
+    comment: '状态',
+  })
+  status: boolean;
+
   @CreateDateColumn({
     comment: '创建时间',
   })
