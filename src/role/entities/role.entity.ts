@@ -10,7 +10,7 @@ import { Permission } from '../../permission/entities/permission.entity';
 
 @Entity()
 export class Role {
-  @ObjectIdColumn()
+  @ObjectIdColumn({ name: '_id' })
   id: ObjectId;
 
   @Column({

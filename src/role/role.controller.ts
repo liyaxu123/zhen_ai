@@ -34,12 +34,13 @@ export class RoleController {
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: '根据ID修改角色信息' })
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.roleService.update(+id, updateRoleDto);
+    return this.roleService.update(id, updateRoleDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.roleService.remove(+id);
+    return this.roleService.remove(id);
   }
 }

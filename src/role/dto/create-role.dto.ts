@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateRoleDto {
@@ -19,6 +19,16 @@ export class CreateRoleDto {
     type: 'string',
   })
   desc: string;
+
+  @IsBoolean({
+    message: '状态必须为布尔值',
+  })
+  @ApiProperty({
+    description: '状态',
+    example: true,
+    type: 'boolean',
+  })
+  status: boolean;
 
   @ApiProperty({
     description: '权限集合',

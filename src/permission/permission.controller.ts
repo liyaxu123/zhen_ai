@@ -46,8 +46,8 @@ export class PermissionController {
   @Patch(':id')
   @ApiOperation({ summary: '根据ID更新权限字段' })
   update(
-    @Param('id') id: string,
-    @Body() updatePermissionDto: UpdatePermissionDto,
+    @Param('id', ValidationPipe) id: string,
+    @Body(ValidationPipe) updatePermissionDto: UpdatePermissionDto,
   ) {
     return this.permissionService.update(id, updatePermissionDto);
   }

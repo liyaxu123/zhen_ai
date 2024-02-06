@@ -1,10 +1,4 @@
-import {
-  IsNotEmpty,
-  IsInt,
-  IsString,
-  IsOptional,
-  IsObject,
-} from 'class-validator';
+import { IsNotEmpty, IsInt, IsString, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
@@ -34,16 +28,6 @@ export class QueryRoleDto {
   @IsOptional()
   @IsString()
   @ApiProperty({
-    description: '角色ID',
-    example: '',
-    type: 'string',
-    required: false,
-  })
-  id?: string;
-
-  @IsOptional()
-  @IsString()
-  @ApiProperty({
     description: '角色名称',
     example: '',
     type: 'string',
@@ -52,11 +36,14 @@ export class QueryRoleDto {
   name?: string;
 
   @IsOptional()
-  @IsObject()
+  @IsString({
+    message: 'status必须为boolean类型',
+  })
   @ApiProperty({
-    description: '创建时间',
-    type: 'object',
+    description: '状态',
+    example: 'true',
+    type: 'string',
     required: false,
   })
-  createTime?: { startTime?: Date; endTime?: Date };
+  status?: string;
 }
