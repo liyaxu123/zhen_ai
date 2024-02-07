@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -15,9 +16,11 @@ import { QueryRoleDto } from './dto/query-role.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiOperation } from '@nestjs/swagger';
 import { QueryValidationPipe } from '../pipes/query-validation.pipe';
+import { LoginGuard } from '../guards/login.guard';
 
 @ApiTags('角色管理模块')
 @Controller('role')
+@UseGuards(LoginGuard)
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 

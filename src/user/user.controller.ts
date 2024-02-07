@@ -18,6 +18,7 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AssignRolesDto } from './dto/assign-roles.dto';
+import { QueryUserDto } from './dto/qury-user.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -135,8 +136,16 @@ export class UserController {
     required: true,
     type: 'string',
   })
+  @UseGuards(LoginGuard)
   findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
+  }
+
+  @Post('/page')
+  @ApiOperation({ summary: '用户分页查询', description: '用户信息分页查询' })
+  @UseGuards(LoginGuard)
+  findAll(@Body(ValidationPipe) queryInfo: QueryUserDto) {
+    return this.userService.findAll(queryInfo);
   }
 
   @Patch(':id')
@@ -148,6 +157,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UseGuards(LoginGuard)
   @ApiOperation({ summary: '注销用户信息', description: '根据id注销用户信息' })
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);

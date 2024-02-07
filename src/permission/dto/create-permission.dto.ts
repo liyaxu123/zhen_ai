@@ -55,11 +55,11 @@ export class CreatePermissionDto {
   })
   component: string;
 
-  @IsEnum({ M: '目录', C: '菜单', F: '按钮' }, { message: '菜单类型错误' })
+  @IsString()
   @IsNotEmpty()
   @ApiProperty({
     description: '菜单类型',
-    example: 'M',
+    example: 'M | C | F',
     required: true,
     type: 'string',
   })

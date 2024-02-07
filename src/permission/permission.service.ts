@@ -111,8 +111,6 @@ export class PermissionService {
   async findAll(
     queryInfo: QueryPermissionDto,
   ): Promise<{ data: Permission[]; total: number }> {
-    console.log(queryInfo);
-
     const { pageNum, pageSize, id, updateTime, code } = queryInfo;
     // 公式：skip = (当前页码 - 1) * 每页的条数
     const skip = (pageNum - 1) * pageSize;

@@ -14,6 +14,7 @@ import * as crypto from 'crypto';
 import { ObjectId } from 'mongodb';
 import { RoleService } from '../role/role.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { QueryUserDto } from './dto/qury-user.dto';
 
 function md5(str) {
   const hash = crypto.createHash('md5');
@@ -93,8 +94,64 @@ export class UserService {
     return await this.userRepository.update(userId, user);
   }
 
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+  // 分页查询
+  async findAll(
+    queryInfo: QueryUserDto,
+  ): Promise<{ data: User[]; total: number }> {
+    const { pageNum, pageSize, username, nickname, tel, email, createTime } =
+      queryInfo;
+
+    const skip = (pageNum - 1) * pageSize;
+
+    const query: any = {};
+
+    if (username) {
+      query.username = {
+        $regex: new RegExp(username, 'i'),
+      };
+    }
+
+    if (nickname) {
+      query.nickname = {
+        $regex: new RegExp(nickname, 'i'),
+      };
+    }
+
+    if (tel) {
+      query.tel = tel;
+    }
+
+    if (email) {
+      query.email = email;
+    }
+
+    if (createTime && createTime.startTime && createTime.endTime) {
+      query.createTime = {
+        $gte: createTime.startTime,
+        $lte: createTime.endTime,
+      };
+    }
+
+    const [data, total] = await this.userRepository.findAndCount({
+      where: query,
+      skip,
+      take: pageSize,
+      order: { createTime: 'DESC' }, // ASC：升序， DESC：降序
+      select: [
+        'id',
+        'username',
+        'avatar',
+        'nickname',
+        'tel',
+        'email',
+        'intro',
+        'roles',
+        'createTime',
+        'updateTime',
+      ],
+    });
+
+    return { data, total };
   }
 
   async findOne(id: string) {
@@ -105,7 +162,10 @@ export class UserService {
         'id',
         'username',
         'avatar',
+        'nickname',
         'tel',
+        'email',
+        'intro',
         'roles',
         'createTime',
         'updateTime',
